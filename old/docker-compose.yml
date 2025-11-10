@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  flutter:
+    build: .
+    container_name: flutter_dev
+    working_dir: /app
+    volumes:
+      - .:/app
+      - flutter_cache:/root/.pub-cache
+    ports:
+      - "8080:8080" # Flutter Webなどで使用
+    stdin_open: true
+    tty: true
+
+volumes:
+  flutter_cache:

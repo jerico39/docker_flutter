@@ -1,0 +1,11 @@
+{
+  "name": "Flutter Dev",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "flutter",
+  "workspaceFolder": "/app",
+  "customizations": {
+    "vscode": {
+      "extensions": ["Dart-Code.flutter", "Dart-Code.dart-code"]
+    }
+  }
+}

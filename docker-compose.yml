@@ -1,0 +1,58 @@
+services:
+  flutter:
+    build: ./frontend
+    container_name: flutter_vote_app
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./frontend:/app
+    tty: true
+    stdin_open: true
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    container_name: fastapi_vote_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_vote_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: vote_app
+      MYSQL_USER: vote_user
+      MYSQL_PASSWORD: vote_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_vote
+    environment:
+      PMA_HOST: db
+      PMA_USER: vote_user
+      PMA_PASSWORD: vote_pass
+      PMA_ARBITRARY: 1
+    ports:
+      - "8081:80"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:

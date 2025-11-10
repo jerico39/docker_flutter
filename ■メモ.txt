@@ -1,0 +1,109 @@
+
+
+
+docker exec -it flutter_vote_app bash
+
+
+bash
+flutter create .
+
+WEB(flutter側の起動)
+flutter run -d web-server --web-hostname=0.0.0.0 --web-port=8080
+
+
+
+
+
+管理画面側の起動URL
+http://localhost:8080/
+http://localhost:8000/docs
+
+
+
+
+
+HTTP通信	flutter pub add http
+状態管理	flutter pub add provider
+JSON変換	flutter pub add json_annotation
+SQLite連携	flutter pub add sqflite
+
+
+
+パッケージを取得
+flutter pub get
+
+
+flutter run -d web-server --web-hostname=0.0.0.0 --web-port=8080
+
+
+==================
+
+https://chatgpt.com/c/690aaa08-b67c-8323-8433-46ac48d740ed
+# コンテナ起動
+docker compose up -d
+
+# コンテナに入る
+docker exec -it flutter_dev bash
+中に入ったら通常通り Flutter コマンドが使えます：
+
+bash
+コードをコピーする
+flutter --version
+flutter create my_app
+cd my_app
+
+flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0
+
+
+http://localhost:8080 にアクセスすれば Flutter Web アプリが確認できます。
+
+
+
+
+VS Code で開発したい場合は、以下を .devcontainer/devcontainer.json として追加。
+
+{
+  "name": "Flutter Dev",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "flutter",
+  "workspaceFolder": "/app",
+  "customizations": {
+    "vscode": {
+      "extensions": ["Dart-Code.flutter", "Dart-Code.dart-code"]
+    }
+  }
+}
+
+
+→ 「Reopen in Container」を押せば Docker 内で VS Code が開発環境として動作します。
+
+💡 Android対応バージョン（オプション）
+
+もし Androidアプリのビルドもしたい場合 は、Dockerfile を以下のように変更します：
+
+FROM ghcr.io/cirruslabs/flutter:stable-android
+
+RUN apt-get update && apt-get install -y \
+    curl unzip git xz-utils zip libglu1-mesa \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+ENV PATH="$PATH:/flutter/bin"
+
+RUN flutter doctor -v
+
+CMD ["bash"]
+
+
+⚠️ Android エミュレーター自体を Docker 内で動かすのは推奨されませんが、
+APK のビルドや CI/CD 用ビルド環境 としては非常に有効です。
+
+✅ まとめ
+ファイル	役割
+Dockerfile	Flutter SDKを含む開発環境を構築
+docker-compose.yml	プロジェクトをボリュームとしてマウントし、ポートを公開
+.devcontainer/devcontainer.json (任意)	VS Codeからコンテナ開発を容易にする
+
+もしあなたの目的が「Flutter Web だけ」「Android ビルド」「CI/CD 用パイプライン構築」など特定の用途なら、その用途に最適化した Dockerfile を作成できます。
+
+👉 どの用途を中心に使いたいですか？

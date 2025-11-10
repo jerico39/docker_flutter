@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>投票結果ダッシュボード</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="font-family: sans-serif; margin: 40px;">
+    <h1>投票結果</h1>
+    <canvas id="voteChart" width="400" height="200"></canvas>
+
+    <script>
+        const data = {{ votes | tojson }};
+        const labels = data.map(v => v.option);
+        const counts = data.map(v => v.votes);
+
+        const ctx = document.getElementById('voteChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '投票数',
+                    data: counts,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    </script>
+</body>
+</html>

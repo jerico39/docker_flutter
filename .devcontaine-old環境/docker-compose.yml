@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  flutter:
+    build: .
+    container_name: flutter_dev
+    volumes:
+      - .:/app
+    working_dir: /app
+    tty: true
+    stdin_open: true
+    # Linuxの場合はホストネットワーク共有
+    network_mode: "host"   # ← LinuxでADB接続する場合は必須
+    # macOS/Windowsの場合は extra_hosts は不要
+
+    environment:
+      PUB_CACHE: "/app/.pub-cache"
