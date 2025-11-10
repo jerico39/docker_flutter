@@ -1,12 +1,10 @@
-from fastapi import FastAPI, HTTPException, Request
-from pydantic import BaseModel
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base
-
-from fastapi.middleware.cors import CORSMiddleware
-import mysql.connector
 
 DATABASE_URL = "mysql+pymysql://vote_user:vote_pass@db:3306/vote_app"
 
@@ -16,20 +14,7 @@ Base = declarative_base()
 
 app = FastAPI()
 
-#テンプレート設定(HTML ダッシュボード)
-templates = Jinja2Templates(directory="templates")
-
-# DB接続関数
-def get_db():
-    return mysql.connector.connect(
-        host="mysql_vote_db",        # docker-compose のサービス名
-        user="vote_user",
-        password="vote_pass", # MySQL root パスワード
-        database="vote_app"   # データベース名
-    )
-
-
-# Flutter からアクセスを許可
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -37,18 +22,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# テンプレート
+templates = Jinja2Templates(directory="templates")
 
+# SQLAlchemy モデル
 class Vote(Base):
     __tablename__ = "votes"
     id = Column(Integer, primary_key=True, index=True)
-    option = Column(String(50))
+    option = Column(String(50), unique=True)
     count = Column(Integer, default=0)
 
 Base.metadata.create_all(bind=engine)
 
+# Pydantic リクエスト
 class VoteRequest(BaseModel):
     option: str
 
+# API: 投票一覧
 @app.get("/votes")
 def get_votes():
     db = SessionLocal()
@@ -56,6 +46,7 @@ def get_votes():
     db.close()
     return [{"option": v.option, "count": v.count} for v in votes]
 
+# API: 投票
 @app.post("/vote")
 def vote(req: VoteRequest):
     db = SessionLocal()
@@ -69,24 +60,15 @@ def vote(req: VoteRequest):
     db.close()
     return {"message": f"Vote for {req.option} counted!"}
 
-
-class VoteRequest(BaseModel):
-    option: str
-
-@app.post("/vote")
-def vote(req: VoteRequest):
-    # 本来はDBに保存などする
-    print(f"投票: {req.option}")
-    return {"message": f"{req.option} に投票しました"}
-
-
-#HTML ダッシュボード
+# HTML ダッシュボード
 @app.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request):
-    db = get_db()
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT `option`, count FROM votes")
-    results = cursor.fetchall()
+    db = SessionLocal()
+    votes = db.query(Vote).all()
     db.close()
-    return templates.TemplateResponse("dashboard.html", {"request": request, "votes": results})
-
+    # votes を辞書リストに変換してテンプレートに渡す
+    votes_data = [{"option": v.option, "count": v.count} for v in votes]
+    return templates.TemplateResponse(
+        "dashboard.html",
+        {"request": request, "votes": votes_data}
+    )
