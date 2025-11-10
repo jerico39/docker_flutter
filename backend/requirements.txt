@@ -2,3 +2,7 @@ fastapi
 uvicorn
 sqlalchemy
 pymysql
+jinja2
+python-multipart
+mysql-connector-python
+

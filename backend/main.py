@@ -1,9 +1,12 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 from fastapi.middleware.cors import CORSMiddleware
+import mysql.connector
 
 DATABASE_URL = "mysql+pymysql://vote_user:vote_pass@db:3306/vote_app"
 
@@ -15,6 +18,15 @@ app = FastAPI()
 
 #テンプレート設定(HTML ダッシュボード)
 templates = Jinja2Templates(directory="templates")
+
+# DB接続関数
+def get_db():
+    return mysql.connector.connect(
+        host="mysql_vote_db",        # docker-compose のサービス名
+        user="vote_user",
+        password="vote_pass", # MySQL root パスワード
+        database="vote_app"   # データベース名
+    )
 
 
 # Flutter からアクセスを許可
@@ -73,7 +85,7 @@ def vote(req: VoteRequest):
 def dashboard(request: Request):
     db = get_db()
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT option, votes FROM votes")
+    cursor.execute("SELECT `option`, count FROM votes")
     results = cursor.fetchall()
     db.close()
     return templates.TemplateResponse("dashboard.html", {"request": request, "votes": results})
