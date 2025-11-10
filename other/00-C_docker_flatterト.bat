@@ -1,0 +1,1 @@
+start "" "%ProgramFiles%\Git\git-bash.exe" -c "cd 'C:\docker_flutter' ; exec bash"
