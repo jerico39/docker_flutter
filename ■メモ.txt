@@ -21,6 +21,24 @@ http://localhost:8000/dashboard
 
 
 
+〇方法 B: エミュレーターで確認
+Android Studio でエミュレーターを起動
+Flutter コンテナ内から接続する場合、エミュレーターは基本 ホスト側で起動
+flutter devices でエミュレーター名が表示されることを確認
+以下でビルド＆実行：
+flutter run -d <emulator_id>
+
+
+
+※<emulator_id> とは？
+
+frontコンテナ内で以下のコマンドでデバイスを確認
+flutter devices
+
+
+ emulator-5554
+とか出るはずだが出ない。
+→Ubuntu上ではダメ。Cドライブ直下などPC環境内で行う必要がある。
 
 
 HTTP通信	flutter pub add http
