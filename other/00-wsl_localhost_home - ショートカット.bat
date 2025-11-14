@@ -1,1 +1,0 @@
-start "" "%ProgramFiles%\Git\git-bash.exe" -c "cd '//wsl.localhost/Ubuntu/home' ; exec bash"

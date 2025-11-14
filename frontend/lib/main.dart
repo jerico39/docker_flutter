@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app/config/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -31,7 +32,8 @@ class _VotePageState extends State<VotePage> {
   String message = "";
 
   Future<void> submitVote() async {
-    final url = Uri.parse('http://localhost:8000/vote');
+    //final url = Uri.parse('http://localhost:8000/vote');
+    final url = Uri.parse(AppConfig.vote);
     try {
       final response = await http.post(
         url,

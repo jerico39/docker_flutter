@@ -1,6 +1,6 @@
 
 
-
+Frontのコンテナ内へ
 docker exec -it flutter_vote_app bash
 
 
@@ -8,6 +8,7 @@ bash
 flutter create .
 
 WEB(flutter側の起動)
+コンテナ内で
 flutter run -d web-server --web-hostname=0.0.0.0 --web-port=8080
 
 
@@ -21,10 +22,15 @@ http://localhost:8000/dashboard
 
 
 
+▼Andoroidでの動作確認
 〇方法 B: エミュレーターで確認
 Android Studio でエミュレーターを起動
-Flutter コンテナ内から接続する場合、エミュレーターは基本 ホスト側で起動
-flutter devices でエミュレーター名が表示されることを確認
+Flutter コンテナ外(ローカルマシン=ホスト)から接続する場合、エミュレーターは基本 ホスト側で起動
+
+コマンド
+flutter devices 
+
+でエミュレーター名が表示されることを確認
 以下でビルド＆実行：
 flutter run -d <emulator_id>
 
@@ -32,13 +38,30 @@ flutter run -d <emulator_id>
 
 ※<emulator_id> とは？
 
-frontコンテナ内で以下のコマンドでデバイスを確認
+
+ローカルマシン上で
 flutter devices
 
 
  emulator-5554
 とか出るはずだが出ない。
 →Ubuntu上ではダメ。Cドライブ直下などPC環境内で行う必要がある。
+
+VSコードにて
+
+
+→Andoroid stadioを起動し、プロジェクトを開くから FRONTのディレクトリをマウント。
+例えば
+C:\docker_flutter\frontend
+
+
+
+バーからメニューを開き、tool→Device Managerで端末を選択。
+三角の再生ボタンでエミュレーターが起動する。
+
+
+
+
 
 
 HTTP通信	flutter pub add http
